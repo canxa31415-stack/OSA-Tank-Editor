@@ -61,7 +61,7 @@
         <input type="text" id="levelCap" name="levelCap" placeholder="45" maxlength="200000" value="45">
     </div>
     <div>
-        <label for="whichTank">Switch Tank</label>
+        <label for="whichTank">Rendered Tank</label>
         <input type="range" id="whichTank" min="0" max="10000" value="0">
     </div>
     <textarea id="codeInput" rows="20" cols="60">
@@ -137,6 +137,13 @@ Class.testTank2 = {
         <input type="text" id="newCanvasWidth" name="newCanvasWidth" placeholder="700" maxlength="200000" value="700">
         <label for="newCanvasHeight">Canvas Height</label>
         <input type="text" id="newCanvasHeight" name="newCanvasHeight" placeholder="500" maxlength="200000" value="500">
+    </div>
+    <div>
+        <label for="errors">Error Messages:</label>
+        <select id="errors" name="errors">
+            <option value="false">False</option>
+            <option value="true">True</option>
+        </select>
     </div>
 </div>
 
