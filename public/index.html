@@ -29,6 +29,14 @@
             flex-direction: column;
             gap: 20px;
         }
+        .info {
+            width: 200px;
+            padding: 20px;
+            background: #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
         label {
             font-weight: bold;
             margin-bottom: 4px;
@@ -37,8 +45,7 @@
 </head>
 <body>
 
-<!-- Sidebar with sliders -->
-
+<!-- Sidebar -->
 <div class="sidebar">
     <!-- <div>
         <label for="shapeInput">Shape</label>
@@ -150,15 +157,15 @@ Class.testTank2 = {
 <!-- Center canvas -->
 <div class="content">
     <canvas id="canvas" width="700" height="500"></canvas>
+</div>
+
+<!-- Info panel -->
+<div class="info">
     <div>
         <div>Label: <span id="labelShower"></span></div>
         <div>Name: <span id="nameShower"></span></div>
         <!-- <div>Definition: <span id="definitionShower"></span></div> -->
     </div>
-</div>
-
-<!-- Info panel -->
-<div class="info">
 </div>
 <script src="settings.js"></script>
 <script src="extrafunctions.js"></script>
