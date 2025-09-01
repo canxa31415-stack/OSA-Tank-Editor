@@ -2,12 +2,13 @@
 let levelCap = document.getElementById('levelCap');
 let whichTank = document.getElementById('whichTank');
 let tankCode = {}
-let tanksList = [tankCode]
 let pointyTraps = document.getElementById('optNoPointy');
 let labelShower = document.getElementById('labelShower');
 let nameShower = document.getElementById('nameShower');
 let definitionShower = document.getElementById('definitionShower');
 let allowErrors = document.getElementById('errors').value;
+let upgradeLabelShower = document.getElementById('upgradeLabelShower');
+let currentError = document.getElementById('currentError');
 let lazyRealSizes = [1, 1, 1];
 for (let i = 3; i < 17; i++) {
     // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
@@ -234,8 +235,69 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
             }
         }
     }
+    function propStuffsBelow() {
+        for(let i = 0; i < code.PROPS.length; i++) {
+            if (code.PROPS[i].POSITION[4] === 0) {
+                if (Array.isArray(code.PROPS[i].TYPE)) {
+                    propCode = {...Class[code.PROPS[i].TYPE[0]], ...code.PROPS[i].TYPE[1]}
+                } else {
+                    propCode = Class[code.PROPS[i].TYPE]
+                }
+                newPropCode = { ...Class.genericEntity };
+                if (propCode) {
+                    let turretParent = propCode.PARENT;
+                    const turretAncestry = [];
+                    while (parent && Class[turretParent]) {
+                        turretAncestry.unshift(Class[turretParent]);
+                        turretParent = Class[turretParent].PARENT;
+                    }
+                    for (const turretAncestor of turretAncestry) {
+                        newPropCode = { ...newPropCode, ...turretAncestor };
+                    }
+                }
+                newPropCode = { ...newPropCode, ...propCode };
+                if (newPropCode.COLOR.BASE === "mirror" || newPropCode.COLOR.BASE === -1 || newPropCode.COLOR === "mirror" || newPropCode.COLOR === -1) {
+                    newPropCode = { ...newPropCode, COLOR: code.COLOR };
+                }
+                let newTurretPos = rotatePoint(x+(code.PROPS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.PROPS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.PROPS[i].POSITION[3]+rotation))
+                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newPropCode, SIZE: code.SIZE * (code.PROPS[i].POSITION[0]/20)}, code.PROPS[i].POSITION[3]+rotation)
+            }
+        }
+    }
+    function propStuffsAbove() {
+        for(let i = 0; i < code.PROPS.length; i++) {
+            if (code.PROPS[i].POSITION[4] === 1) {
+                if (Array.isArray(code.PROPS[i].TYPE)) {
+                    propCode = {...Class[code.PROPS[i].TYPE[0]], ...code.PROPS[i].TYPE[1]}
+                } else {
+                    propCode = Class[code.PROPS[i].TYPE]
+                }
+                newPropCode = { ...Class.genericEntity };
+                if (propCode) {
+                    let turretParent = propCode.PARENT;
+                    const turretAncestry = [];
+                    while (parent && Class[turretParent]) {
+                        turretAncestry.unshift(Class[turretParent]);
+                        turretParent = Class[turretParent].PARENT;
+                    }
+                    for (const turretAncestor of turretAncestry) {
+                        newPropCode = { ...newPropCode, ...turretAncestor };
+                    }
+                }
+                newPropCode = { ...newPropCode, ...propCode };
+                if (newPropCode.COLOR.BASE === "mirror" || newPropCode.COLOR.BASE === -1 || newPropCode.COLOR === "mirror" || newPropCode.COLOR === -1) {
+                    newPropCode = { ...newPropCode, COLOR: code.COLOR };
+                }
+                let newTurretPos = rotatePoint(x+(code.PROPS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.PROPS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.PROPS[i].POSITION[3]+rotation))
+                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newPropCode, SIZE: code.SIZE * (code.PROPS[i].POSITION[0]/20)}, code.PROPS[i].POSITION[3]+rotation)
+            }
+        }
+    }
     if (code.TURRETS) {
         turretStuffsBelow()
+    }
+    if (code.PROPS) {
+        propStuffsBelow()
     }
     for(let i = 0; i < code.GUNS.length; i++) {
         if (code.GUNS[i].PROPERTIES) {
@@ -265,6 +327,9 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
     if (code.TURRETS) {
         turretStuffsAbove()
     }
+    if (code.PROPS) {
+        propStuffsAbove()
+    }
 };
 function animate() {
     try {
@@ -291,6 +356,7 @@ function animate() {
     } catch (e) {
         if (allowErrors === "true") {
             console.error("Error in user code:", e);
+            currentError.textContent = "Error in user code:" + e;
         } else {
         }
         isErroring = true
@@ -332,8 +398,10 @@ function animate() {
         }
         drawEntity("#FF44FF", (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), code, 0)
         labelShower.textContent = code.LABEL || "";
+        upgradeLabelShower.textContent = code.UPGRADE_LABEL || code.LABEL || "";
         nameShower.textContent = code.NAME || "";
 //        definitionShower.textContent = "";
+        currentError.textContent = "";
     }
     allowErrors = document.getElementById('errors').value;
     setTimeout(animate, 5);
