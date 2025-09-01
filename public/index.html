@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tank Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: #f5f5f5;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            border: 1px solid #333;
+            background: white;
+        }
+        .sidebar {
+            width: 600px;
+            padding: 20px;
+            background: #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar with sliders -->
+
+<div class="sidebar">
+    <!-- <div>
+        <label for="shapeInput">Shape</label>
+        <input type="text" id="shapeInput" name="shapeInput" placeholder="Side amount" maxlength="200000" value="0">
+    </div>
+    <div>
+        <label for="colorInput">Color</label>
+        <input type="text" id="colorInput" name="colorInput" placeholder="Color" maxlength="200" value="0">
+    </div>
+    <div>
+        <label for="sizeInput">Size</label>
+        <input type="text" id="sizeInput" name="sizeInput" placeholder="12" maxlength="200" value="12">
+    </div>
+    <div>
+        <label for="scoreInput">Level</label>
+        <input type="text" id="scoreInput" name="scoreInput" placeholder="45" maxlength="200000" value="45">
+    </div>-->
+    <div>
+        <label for="levelCap">Config.LEVEL_CAP</label>
+        <input type="text" id="levelCap" name="levelCap" placeholder="45" maxlength="200000" value="45">
+    </div>
+    <div>
+        <label for="whichTank">Rendered Tank</label>
+        <input type="range" id="whichTank" min="0" max="10000" value="0">
+    </div>
+    <textarea id="codeInput" rows="20" cols="60">
+[
+Class.testTank1 = {
+    PARENT: "genericTank",
+    SHAPE: 3.5,
+    COLOR: 3,
+    SIZE: 12,
+    LEVEL: 45,
+    GUNS: weaponArray({
+        POSITION: {
+            LENGTH: 18,
+            WIDTH: 8
+        },
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flankGuard]),
+            TYPE: "bullet"
+        }
+    }, 3)
+},
+Class.testTank2 = {
+    PARENT: "genericTank",
+    SHAPE: 8,
+    COLOR: "rainbow",
+    SIZE: 24,
+    LEVEL: 40,
+    GUNS: [
+        {
+            POSITION: [20, 8, 1, 0, 5.5, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.twin, g.doubleTwin]),
+                TYPE: "bullet"
+            }
+        },
+        {
+            POSITION: [20, 8, 1, 0, -5.5, 0, 0.5],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.twin, g.doubleTwin]),
+                TYPE: "bullet"
+            }
+        }
+    ],
+},
+]
+  </textarea><br>
+    <div>
+        <div>Zoom: <span id="zoomShow">1</span></div>
+        <label for="colorStyle">Style:</label>
+        <select id="colorStyle" name="colorStyle">
+            <option value="lightColors">Light Colors</option>
+            <option value="darkColors">Dark Colors</option>
+            <option value="naturalColors">Natural</option>
+            <option value="classicColors">Classic</option>
+        </select>
+    </div>
+    <div>
+        <label for="optNoPointy">Classic Traps:</label>
+        <select id="optNoPointy" name="optNoPointy">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+    </div>
+    <div>
+        <label for="borderType">Border Type:</label>
+        <select id="borderType" name="borderType">
+            <option value="softBorders">Soft</option>
+            <option value="darkBorders">Dark</option>
+        </select>
+    </div>
+    <div>
+        <label for="newCanvasWidth">Canvas Width</label>
+        <input type="text" id="newCanvasWidth" name="newCanvasWidth" placeholder="700" maxlength="200000" value="700">
+        <label for="newCanvasHeight">Canvas Height</label>
+        <input type="text" id="newCanvasHeight" name="newCanvasHeight" placeholder="500" maxlength="200000" value="500">
+    </div>
+</div>
+
+<!-- Center canvas -->
+<div class="content">
+    <canvas id="canvas" width="700" height="500"></canvas>
+    <div>
+        <div>Label: <span id="labelShower"></span></div>
+        <div>Name: <span id="nameShower"></span></div>
+        <!-- <div>Definition: <span id="definitionShower"></span></div> -->
+    </div>
+</div>
+
+<!-- Info panel -->
+<div class="info">
+</div>
+<script src="settings.js"></script>
+<script src="extrafunctions.js"></script>
+<script src="color.js"></script>
+<script src="constants.js"></script>
+<script src="config.js"></script>
+<script src="gunvals.js"></script>
+<script src="facilitators.js"></script>
+<script src="food.js"></script>
+<script src="generics.js"></script>
+<script src="misc.js"></script>
+<script src="projectiles.js"></script>
+<script src="tanks.js"></script>
+<script src="dev.js"></script>
+<script src="turrets.js"></script>
+<script src="bosses.js"></script>
+<script src="viewer.js"></script>
+
+</body>
+</html>
