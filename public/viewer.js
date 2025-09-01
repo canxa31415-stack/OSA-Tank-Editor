@@ -7,6 +7,7 @@ let pointyTraps = document.getElementById('optNoPointy');
 let labelShower = document.getElementById('labelShower');
 let nameShower = document.getElementById('nameShower');
 let definitionShower = document.getElementById('definitionShower');
+let allowErrors = document.getElementById('errors');
 let lazyRealSizes = [1, 1, 1];
 for (let i = 3; i < 17; i++) {
     // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
@@ -288,7 +289,9 @@ function animate() {
         code = { ...code, ...tankCode };
         isErroring = false
     } catch (e) {
-        console.error("Error in user code:", e);
+        if (allowErrors === true) {
+            console.error("Error in user code:", e);
+        }
         isErroring = true
     }
     if (isErroring === false) {
