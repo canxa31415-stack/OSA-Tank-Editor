@@ -1,0 +1,1 @@
+MAX_SKILL = 9;
