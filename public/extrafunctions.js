@@ -2,8 +2,6 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 OGWidth = canvas.width
 OGHeight = canvas.height
-console.log(OGWidth);
-console.log(OGHeight);
 
 
 let zoom = 1;
@@ -192,4 +190,5 @@ function invertedApproximateScore(yTarget, xMin = 0, xMax = 200) { // chat gpt w
         }
     }
     return Math.round(0.5 * (xMin + xMax)); // best guess after maxIter
+
 }
