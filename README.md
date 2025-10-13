@@ -5,3 +5,7 @@ A tank editor/tank viewer for OSA/APS++
 Instructions:
 - Go to `index.html` and run it
 - If that doesnt work try typing `npm i ws` into the terminal
+
+## Disclaimer
+"for loops" are not supported
+tanks in the code input must be seperated by `,`s
