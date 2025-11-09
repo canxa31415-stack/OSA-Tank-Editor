@@ -374,7 +374,7 @@ function animate() {
         eval("(" + document.getElementById('codeInput').value + ")")
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
-        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 6,  "#ddd")
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -453,3 +453,4 @@ document.getElementById("newCanvasWidth").addEventListener("change", () => {
 document.getElementById("newCanvasHeight").addEventListener("change", () => {
     canvas.height = document.getElementById('newCanvasHeight').value;
 });
+
