@@ -1,4 +1,5 @@
 
+
 let levelCap = document.getElementById('levelCap');
 let whichTank = document.getElementById('whichTank');
 let tankCode = {}
@@ -9,6 +10,7 @@ let definitionShower = document.getElementById('definitionShower');
 let allowErrors = document.getElementById('errors').value;
 let upgradeLabelShower = document.getElementById('upgradeLabelShower');
 let currentError = document.getElementById('currentError');
+let showGrid = eval(document.getElementById('showGrid').value);
 let lazyRealSizes = [1, 1, 1];
 for (let i = 3; i < 17; i++) {
     // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
@@ -331,11 +333,48 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
         propStuffsAbove()
     }
 };
+function drawGrid(ctx, centerX, centerY, spacing, color) {
+    showGrid = eval(document.getElementById('showGrid').value);
+    if (showGrid === true) {
+        const width = ctx.canvas.width;
+        const height = ctx.canvas.height;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1*zoom;
+        ctx.globalAlpha = 0.04
+        ctx.beginPath();
+
+        // Vertical lines
+        for (let x = (centerX-(offsetX/zoom)) % (spacing*zoom); x <= width; x += (spacing*zoom)) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+        }
+        for (let x = (centerX-(offsetX/zoom)) - (spacing*zoom); x >= 0; x -= (spacing*zoom)) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+        }
+
+        // Horizontal lines
+        for (let y = (centerY-(offsetY/zoom)) % (spacing*zoom); y <= height; y += (spacing*zoom)) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+        }
+        for (let y = (centerY-(offsetY/zoom)) - (spacing*zoom); y >= 0; y -= (spacing*zoom)) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+        }
+
+        ctx.stroke();
+    } else {
+        return
+    }
+}
 function animate() {
     try {
         eval("(" + document.getElementById('codeInput').value + ")")
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 6,  "#ddd")
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -364,6 +403,7 @@ function animate() {
     if (isErroring === false) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
