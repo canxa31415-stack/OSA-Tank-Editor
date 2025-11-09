@@ -333,13 +333,18 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
         propStuffsAbove()
     }
 };
-function drawGrid(ctx, centerX, centerY, spacing, color) {
+function drawGrid(ctx, centerX, centerY, spacing, color, color2) {
     showGrid = eval(document.getElementById('showGrid').value);
     if (showGrid === true) {
         const width = ctx.canvas.width;
         const height = ctx.canvas.height;
 
-        ctx.strokeStyle = color;
+
+        ctx.globalAlpha = 1
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+        ctx.strokeStyle = color2;
         ctx.lineWidth = 1*zoom;
         ctx.globalAlpha = 0.04
         ctx.beginPath();
@@ -374,7 +379,7 @@ function animate() {
         eval("(" + document.getElementById('codeInput').value + ")")
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
-        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureBlack"))
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureWhite"),  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -403,7 +408,7 @@ function animate() {
     if (isErroring === false) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
-        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureBlack"))
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureWhite"),  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -453,4 +458,3 @@ document.getElementById("newCanvasWidth").addEventListener("change", () => {
 document.getElementById("newCanvasHeight").addEventListener("change", () => {
     canvas.height = document.getElementById('newCanvasHeight').value;
 });
-
