@@ -311,13 +311,13 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
         }
         if (isObject(code.GUNS[i].POSITION)) {
             if (code.GUNS[i].PROPERTIES) {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, code.GUNS[i].PROPERTIES.ALPHA || 1, 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
             } else {
                 drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE+rotation) || 0, false,  true, 1, 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
             }
         } else {
             if (code.GUNS[i].PROPERTIES) {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5]+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, code.GUNS[i].PROPERTIES.ALPHA || 1, 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5]+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
             } else {
                 drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5]+rotation) || 0, false, true,  1, 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
             }
@@ -325,6 +325,7 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
     }
     ctx.fillStyle = calcColor(code.COLOR);
     ctx.strokeStyle = getColorDark(calcColor(code.COLOR));
+    ctx.globalAlpha = code.ALPHA || 1
     drawPoly(ctx, x, y, code.SIZE*zoom, code.SHAPE, degreesToRadians(rotation), code.BORDERLESS, code.DRAW_FILL, true)
     if (code.TURRETS) {
         turretStuffsAbove()
