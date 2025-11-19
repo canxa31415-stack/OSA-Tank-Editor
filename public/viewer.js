@@ -11,6 +11,7 @@ let allowErrors = document.getElementById('errors').value;
 let upgradeLabelShower = document.getElementById('upgradeLabelShower');
 let currentError = document.getElementById('currentError');
 let showGrid = eval(document.getElementById('showGrid').value);
+let showHitbox = eval(document.getElementById('showHitbox').value);
 let lazyRealSizes = [1, 1, 1];
 for (let i = 3; i < 17; i++) {
     // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
@@ -448,6 +449,12 @@ function animate() {
         nameShower.textContent = code.NAME || "";
 //        definitionShower.textContent = "";
         currentError.textContent = "";
+        showHitbox = eval(document.getElementById('showHitbox').value);
+        if (showHitbox === true) {
+            ctx.fillStyle = "#FF0000";
+            ctx.strokeStyle = "#FF0000";
+            drawPoly(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), realSize*zoom, 0, 0, false, false, true)
+        }
     }
     allowErrors = document.getElementById('errors').value;
     setTimeout(animate, 5);
