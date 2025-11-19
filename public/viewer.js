@@ -12,6 +12,8 @@ let upgradeLabelShower = document.getElementById('upgradeLabelShower');
 let currentError = document.getElementById('currentError');
 let showGrid = eval(document.getElementById('showGrid').value);
 let showHitbox = eval(document.getElementById('showHitbox').value);
+let animateIt = eval(document.getElementById('animateIt').value);
+let animT = 0
 let lazyRealSizes = [1, 1, 1];
 for (let i = 3; i < 17; i++) {
     // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
@@ -177,7 +179,39 @@ function calcColor(color) {
         return getColor(color);
     }
 }
+function angleToPoint(x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    return radiansToDegrees(Math.atan2(dy, dx));
+}
+let fighterX = 0
+let fighterY = 0
+
+document.addEventListener('mousemove', function(event) {
+    if (!isDragging) return;
+    if (animateIt === true) {
+        fighterX = event.clientX - 505;
+        fighterY = event.clientY + 33;
+    }
+});
 const drawEntity = (baseColor, x, y, code, rotation) => {
+    animateIt = eval(document.getElementById('animateIt').value);
+    let rotationDif = 0
+    let rotationDif2 = null
+    if (animateIt === true) {
+        if (code.FACING_TYPE === 'spin') {
+            rotationDif = rotation+(0.04*(animT*170))
+        } else if (code.FACING_TYPE.includes('spin')) {
+            rotationDif = rotation+(code.FACING_TYPE[1].speed*(animT*170))
+        }
+        if (code.CONTROLLERS === 'nearestDifferentMaster' || code.CONTROLLERS.includes('nearestDifferentMaster')) {
+            rotationDif2 = radiansToDegrees(angleToPoint(x, y, fighterX, fighterY))
+//            console.log(rotationDif2)
+        } else {
+            rotationDif2 = null
+        }
+    }
 //    console.log(baseColor, x, y, code);
     ctx.lineWidth = zoom*4.175;
     function turretStuffsBelow() {
@@ -204,8 +238,22 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
                 if (newTurretCode.COLOR.BASE === "mirror" || newTurretCode.COLOR.BASE === -1 || newTurretCode.COLOR === "mirror" || newTurretCode.COLOR === -1) {
                     newTurretCode = { ...newTurretCode, COLOR: code.COLOR };
                 }
-                let newTurretPos = rotatePoint(x+(code.TURRETS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.TURRETS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.TURRETS[i].POSITION[3]+rotation))
-                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, code.TURRETS[i].POSITION[3]+rotation)
+                let newTurretPos = rotatePoint(x+(code.TURRETS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.TURRETS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.TURRETS[i].POSITION[3]+rotation+degreesToRadians(rotationDif)))
+                let turretRotationDif2 = null
+                if (animateIt === true) {
+                    turretRotationDif2 = radiansToDegrees(angleToPoint(newTurretPos[0], newTurretPos[1], fighterX, fighterY))
+                    if (
+                        newTurretCode.FACING_TYPE === 'spin' ||
+                        newTurretCode.FACING_TYPE.includes('spin') ||
+                        newTurretCode.MIRROR_MASTER_ANGLE === true ||
+                        newTurretCode.INDEPENDENT === true
+                    ) {
+                        turretRotationDif2 = null
+                    } else {
+                    }
+                }
+                if (!isDragging) turretRotationDif2 = null
+                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation+degreesToRadians(rotationDif))
             }
         }
     }
@@ -234,7 +282,20 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
                     newTurretCode = { ...newTurretCode, COLOR: code.COLOR };
                 }
                 let newTurretPos = rotatePoint(x+(code.TURRETS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.TURRETS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.TURRETS[i].POSITION[3]+rotation))
-                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, code.TURRETS[i].POSITION[3]+rotation)
+                let turretRotationDif2 = null
+                if (animateIt === true) {
+                    turretRotationDif2 = radiansToDegrees(angleToPoint(newTurretPos[0], newTurretPos[1], fighterX, fighterY))
+                    if (
+                        newTurretCode.FACING_TYPE === 'spin' ||
+                        newTurretCode.FACING_TYPE.includes('spin') ||
+                        newTurretCode.MIRROR_MASTER_ANGLE === true ||
+                        newTurretCode.INDEPENDENT === true
+                    ) {
+                        turretRotationDif2 = null
+                    }
+                }
+                if (!isDragging) turretRotationDif2 = null
+                drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation)
             }
         }
     }
@@ -312,22 +373,22 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
         }
         if (isObject(code.GUNS[i].POSITION)) {
             if (code.GUNS[i].PROPERTIES) {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE)+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
             } else {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE+rotation) || 0, false,  true, 1, 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE)+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, false,  true, 1, 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
             }
         } else {
             if (code.GUNS[i].PROPERTIES) {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5]+rotation) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5])+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
             } else {
-                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5]+rotation) || 0, false, true,  1, 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
+                drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5])+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, false, true,  1, 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
             }
         }
     }
     ctx.fillStyle = calcColor(code.COLOR);
     ctx.strokeStyle = getColorDark(calcColor(code.COLOR));
     ctx.globalAlpha = code.ALPHA || 1
-    drawPoly(ctx, x, y, code.SIZE*zoom, code.SHAPE, degreesToRadians(rotation), code.BORDERLESS, code.DRAW_FILL, true)
+    drawPoly(ctx, x, y, code.SIZE*zoom, code.SHAPE, degreesToRadians(rotation+degreesToRadians(rotationDif)), code.BORDERLESS, code.DRAW_FILL, true)
     if (code.TURRETS) {
         turretStuffsAbove()
     }
@@ -378,6 +439,7 @@ function drawGrid(ctx, centerX, centerY, spacing, color, color2) {
 }
 function animate() {
     try {
+        animT++
         eval("(" + document.getElementById('codeInput').value + ")")
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
@@ -408,6 +470,7 @@ function animate() {
         isErroring = true
     }
     if (isErroring === false) {
+        animT++
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
         drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureWhite"),  getColor("pureBlack"))
@@ -457,6 +520,7 @@ function animate() {
         }
     }
     allowErrors = document.getElementById('errors').value;
+//    drawPoly(ctx, fighterX, fighterY, realSize*zoom, 0, 0, false, false, true)
     setTimeout(animate, 5);
 }
 animate();
