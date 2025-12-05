@@ -634,8 +634,36 @@ weaponArray = (weapons, count, delayIncrement = 0, delayOverflow = false) => {
     }
     return output;
 }
+weaponMirror = (weapons, delayIncrement = 0.5, delayOverflow = false) => {
+    // delayIncrement: how much each side's delay increases by
+    // delayOverflow: false to constrain the delay value between [0, 1)
+    if (!Array.isArray(weapons)) {
+        weapons = [weapons]
+    }
+    let yKey = 4;
+    let angleKey = 5;
+    let delayKey = 6;
+
+    let output = [];
+    for (let weapon of weapons) {
+        let newWeapon = dereference(weapon);
+
+        if (!Array.isArray(newWeapon.POSITION)) {
+            yKey = "Y";
+            angleKey = "ANGLE";
+            delayKey = "DELAY";
+        }
+
+        newWeapon.POSITION[yKey] = (newWeapon.POSITION[yKey] ?? 0) * -1;
+        newWeapon.POSITION[angleKey] = (newWeapon.POSITION[angleKey] ?? 0) * -1;
+        newWeapon.POSITION[delayKey] = (newWeapon.POSITION[delayKey] ?? 0) + delayIncrement;
+        output.push(weapon, newWeapon);
+
+    }
+    return output;
+}
 class LayeredBoss {
-    constructor(identifier, NAME, PARENT = "celestial", SHAPE = 9, COLOR = 0, trapTurretType = "baseTrapTurret", trapTurretSize = 6.5, layerScale = 5, BODY, SIZE, VALUE) {
+    constructor(identifier, NAME, PARENT = "celestial", SHAPE = 9, COLOR = 0, trapTurretType = "baseTrapTurret", trapTurretSize = 6.5, layerScale = 5, BODY, SIZE = Class[PARENT].SIZE, VALUE) {
         this.identifier = identifier ?? NAME.charAt(0).toLowerCase() + NAME.slice(1);
         this.layerID = 0;
         Class[this.identifier] = {
@@ -854,7 +882,6 @@ makeLaby = (type, level, baseScale = 1) => {
         DRAW_HEALTH: type.DRAW_HEALTH,
         GIVE_KILL_MESSAGE: type.GIVE_KILL_MESSAGE || level > 1,
         GUNS: type.GUNS ?? [],
-        TURRETS: type.TURRETS ?? [],
         PROPS: Array(level).fill().map((_, i) => ({
             POSITION: [20 * downscale ** (i + 1), 0, 0, !(i & 1) ? 180 / usableSHAPE : 0, 1],
             TYPE: [type, { COLOR: 'mirror' }]
