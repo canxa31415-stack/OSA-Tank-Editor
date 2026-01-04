@@ -185,14 +185,49 @@ function angleToPoint(x1, y1, x2, y2) {
 
     return radiansToDegrees(Math.atan2(dy, dx));
 }
-let fighterX = 0
-let fighterY = 0
+let fighterX = (canvas.width / 2)
+let fighterY = (canvas.height / 2)
 
-document.addEventListener('mousemove', function(event) {
+/*document.addEventListener('mousemove', function(event) {
     if (!isDragging) return;
-    if (animateIt === true) {
+    if (!animateIt === true) {
         fighterX = event.clientX - 505;
         fighterY = event.clientY + 33;
+    }
+});*/
+
+let fighterXD = 0
+let fighterYD = 0
+let dontShowHitter = false
+document.addEventListener('keypress', function(event) {
+    const el = document.activeElement;
+    const isTyping =
+        el && (
+            el.tagName === "TEXTAREA" ||
+            (el.tagName === "INPUT" && el.type !== "button" && el.type !== "checkbox" && el.type !== "radio") ||
+            el.isContentEditable
+        );
+    if (isTyping) {
+        return;
+    }
+    if (event.key === "a") {
+        fighterXD -= 1
+    }
+    if (event.key === "d") {
+        fighterXD += 1
+    }
+    if (event.key === "w") {
+        fighterYD -= 1
+    }
+    if (event.key === "s") {
+        fighterYD += 1
+    }
+    if (event.key === " ") {
+        if (dontShowHitter === true) {
+            dontShowHitter = false
+        } else if (dontShowHitter === false) {
+            dontShowHitter = true
+        }
     }
 });
 const drawEntity = (baseColor, x, y, code, rotation) => {
@@ -252,7 +287,7 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
                     } else {
                     }
                 }
-                if (!isDragging) turretRotationDif2 = null
+//                if (!isDragging) turretRotationDif2 = null
                 drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation+degreesToRadians(rotationDif))
             }
         }
@@ -294,7 +329,7 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
                         turretRotationDif2 = null
                     }
                 }
-                if (!isDragging) turretRotationDif2 = null
+//                if (!isDragging) turretRotationDif2 = null
                 drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation)
             }
         }
@@ -443,7 +478,7 @@ function animate() {
         eval("(" + document.getElementById('codeInput').value + ")")
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
-        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureWhite"),  getColor("pureBlack"))
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("white"),  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -473,7 +508,7 @@ function animate() {
         animT++
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         reanimateColors();
-        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("pureWhite"),  getColor("pureBlack"))
+        drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30,  getColor("white"),  getColor("pureBlack"))
         borderType = document.getElementById('borderType').value.toString();
         color = eval(document.getElementById('colorStyle').value);
         whichTank.max = (eval("(" + document.getElementById('codeInput').value + ")").length-1)
@@ -518,9 +553,21 @@ function animate() {
             ctx.strokeStyle = "#FF0000";
             drawPoly(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), realSize*zoom, 0, 0, false, false, true)
         }
+        if (animateIt === true) {
+            ctx.fillStyle = "#FF0000";
+            ctx.strokeStyle = "#FF0000";
+            if (dontShowHitter === false) {
+                drawPoly(ctx, fighterX, fighterY, 20*zoom, 0, 0, false, false, true)
+                drawPoly(ctx, fighterX, fighterY, 20*zoom, 2, degreesToRadians(animT/4), false, true, true)
+                drawPoly(ctx, fighterX, fighterY, 20*zoom, 2, degreesToRadians(90 + (animT/4)), false, true, true)
+            }
+            fighterX += fighterXD
+            fighterXD = fighterXD/1.1
+            fighterY += fighterYD
+            fighterYD = fighterYD/1.1
+        }
     }
     allowErrors = document.getElementById('errors').value;
-//    drawPoly(ctx, fighterX, fighterY, realSize*zoom, 0, 0, false, false, true)
     setTimeout(animate, 5);
 }
 animate();
