@@ -125,7 +125,7 @@
             <option value="false">False</option>
         </select>
     </div>
-    <div>Tiles: ____, nest, bas1 - 8, bap1 - 8, wall, rock, roid, domn<span id="tiles">1</span></div>
+    <div>Tiles: ____, nest, bas1 - 8, bap1 - 8, wall, rock, roid, domn, port<span id="tiles">1</span></div>
 </div>
 
 <!-- Center canvas -->
@@ -1020,6 +1020,10 @@
         let domn = {
             COLOR: getColor("yellow"),
             ENTITY: dominators.NOTHING,
+        }
+        let port = {
+            COLOR: getColor("black"),
+            ENTITY: null,
         }
         mapTileWidth = parseFloat(document.getElementById('mapTileWidth').value)
         mapTileHeight = parseFloat(document.getElementById('mapTileHeight').value)
