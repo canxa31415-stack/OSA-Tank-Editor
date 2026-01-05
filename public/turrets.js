@@ -355,6 +355,23 @@ Class.protoSwarmerTurret = makeTurret({
         },
     ],
 }, {canRepel: true, limitFov: true, extraStats: []})
+Class.hyperSwarmerTurret = makeTurret({
+    GUNS: [
+        {
+            POSITION: [10, 14, -1.2, 5, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.pounder, g.destroyer, g.hive, {speed: 1.3, maxSpeed: 0.5, health: 1.3, range: 1.3}]),
+                TYPE: "hyperHive",
+            },
+        },
+        {
+            POSITION: [11, 12, 1, 5, 0, 0, 0],
+        },
+        {
+            POSITION: [8, 8, 1, 5, 0, 0, 0],
+        },
+    ],
+}, {canRepel: true, limitFov: true, extraStats: []})
 Class.swarmTurret = makeTurret({
     GUNS: [
         {
