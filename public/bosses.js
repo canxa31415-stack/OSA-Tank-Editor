@@ -273,8 +273,6 @@ Class.delta = {
 Class.deltaDestroyer = {
     PARENT: "delta",
     UPGRADE_LABEL: "Delta Destroyer",
-    NAME: "Delta Destroyer",
-    DISPLAY_NAME: false,
     GUNS: [
         ...weaponArray({
             POSITION: [ 7, 10.5, -1.4, 6, 0, 60, 0],
@@ -310,8 +308,6 @@ Class.deltaDestroyer = {
 Class.deltaGunner = {
     PARENT: "delta",
     UPGRADE_LABEL: "Delta Gunner",
-    NAME: "Delta Gunner",
-    DISPLAY_NAME: false,
     FACING_TYPE: "toTarget",
     AI: { NO_LEAD: false },
     GUNS: [
@@ -369,8 +365,6 @@ Class.scatterer = {
 Class.deltaSprayer = {
     PARENT: "delta",
     UPGRADE_LABEL: "Delta Sprayer",
-    NAME: "Delta Sprayer",
-    DISPLAY_NAME: false,
     SKILL: [3, 5, 5, 5, 3, 1, 0, 9, 1, 0],
     AI: { NO_LEAD: false },
     HAS_NO_RECOIL: true,
@@ -396,8 +390,6 @@ Class.deltaSprayer = {
 Class.deltaBattleship = {
     PARENT: "delta",
     UPGRADE_LABEL: "Delta Battleship",
-    NAME: "Delta Battleship",
-    DISPLAY_NAME: false,
     GUNS: weaponArray([
         {
             POSITION: [4, 6, 0.6, 7, 3.5, 60, 1/4],
@@ -942,8 +934,6 @@ Class.nester = {
 Class.nestKeeper = {
     PARENT: "nester",
     LABEL: "Nest Keeper",
-    NAME: "Nest Keeper",
-    DISPLAY_NAME: false,
     MAX_CHILDREN: 15,
     GUNS: weaponArray({
         POSITION: [3.5, 6.65, 1.2, 8, 0, 36, 0],
@@ -969,8 +959,6 @@ Class.nestKeeper = {
 Class.nestWarden = {
     PARENT: "nester",
     LABEL: "Nest Warden",
-    NAME: "Nest Warden",
-    DISPLAY_NAME: false,
     GUNS: weaponArray([
         {
             POSITION: [10.7, 8, 1, 0, 0, 36, 0],
@@ -997,8 +985,6 @@ Class.nestWarden = {
 Class.nestGuardian = {
     PARENT: "nester",
     LABEL: "Nest Guardian",
-    NAME: "Nest Guardian",
-    DISPLAY_NAME: false,
     GUNS: weaponArray({
         POSITION: [5.5, 7, 1, 6, 0, 36, 0],
         PROPERTIES: {
@@ -1038,8 +1024,6 @@ Class.arNester = {
 Class.nestCurator = {
     PARENT: "arNester",
     LABEL: "Nest Curator",
-    NAME: "Nest Curator",
-    DISPLAY_NAME: false,
     MAX_CHILDREN: 15,
     GUNS: weaponArray([{
         POSITION: [ 4.5, 1.5, -1.4, 8, 3.75, 180, 0],
@@ -1083,8 +1067,6 @@ Class.nestCurator = {
 Class.nestDeacon = {
     PARENT: "arNester",
     LABEL: "Nest Deacon",
-    NAME: "Nest Deacon",
-    DISPLAY_NAME: false,
     GUNS: weaponArray([
         {
             POSITION: [10.7, 8, 1, 0, 0, 36, 0],
@@ -1111,8 +1093,6 @@ Class.nestDeacon = {
 Class.nestChampion = {
     PARENT: "arNester",
     LABEL: "Nest Champion",
-    NAME: "Nest Champion",
-    DISPLAY_NAME: false,
     GUNS: weaponArray({
         POSITION: [5.5, 7, 1, 6, 0, 36, 0],
         PROPERTIES: {
