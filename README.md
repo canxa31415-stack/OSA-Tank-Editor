@@ -8,7 +8,7 @@ Instructions:
 - Download zip file
 - Unzip it
 - Open the folder as a WebStorm project
-- Go to `index.html` and run it
+- Go to `server.js` and run it. If that fails try running `tankViewer.html`.
 - If that doesnt work try typing `npm i ws` into the terminal
 
 ## Disclaimer
