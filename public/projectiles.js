@@ -1,56 +1,17 @@
+
 // Bullets
-Class.splitterBullet = {
-    PARENT: "bullet",
-    INDEPENDENT: true,
-    GUNS: [
-        {
-            POSITION: [8, 8, 1, 0, 0, 90, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-        {
-            POSITION: [8, 8, 1, 0, 0, 270, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-    ]
-}
-Class.superSplitterBullet = {
-    PARENT: "bullet",
-    INDEPENDENT: true,
-    GUNS: [
-        {
-            POSITION: [8, 8, 1, 0, 0, 90, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic]),
-                TYPE: ["splitterBullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-        {
-            POSITION: [8, 8, 1, 0, 0, 270, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic]),
-                TYPE: ["splitterBullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-    ]
-}
 Class.turretedBullet = makeAuto('bullet', "Auto-Bullet", {type: "bulletAutoTurret", size: 14, color: "veryLightGrey", angle: 0});
 Class.speedBullet = {
     PARENT: "bullet",
-    MOTION_TYPE: "accel",
+    MOTION_TYPE: ["glide", {damp:-100}]
 }
 Class.growBullet = {
     PARENT: "bullet",
-    MOTION_TYPE: "grow",
+    MOTION_TYPE: "grow", // todo: reimplement grow motion_type
+}
+Class.cxATMGBullet = {
+    PARENT: "bullet",
+    SHAPE: Class.cube.SHAPE,
 }
 Class.flare = {
     PARENT: "growBullet",
@@ -66,35 +27,121 @@ Class.casing = {
     LABEL: "Shell",
     TYPE: "swarm",
 }
-Class.forkSplitterBullet = {
+Class.undertowEffect = {
+    PARENT: 'genericTank',
+    TYPE: 'undertowEffect',
+    SIZE: 5,
+    COLOR: 1,
+    HITS_OWN_TYPE: "never",
+    GIVE_KILL_MESSAGE: false,
+    ACCEPTS_SCORE: false,
+    DRAW_HEALTH: false,
+    DIE_AT_RANGE: true,
+    BODY: {
+        HEALTH: 9e99,
+        DAMAGE: 0,
+        RANGE: 5,
+        PUSHABILITY: 0,
+    }
+}
+Class.undertowBullet = {
+    PARENT: 'bullet',
+    ON: [
+        {
+            event: "tick",
+            handler: ({ body }) => {
+                for (let instance of entities.values()) {
+                    let diffX = instance.x - body.x,
+                        diffY = instance.y - body.y,
+                        dist2 = diffX ** 2 + diffY ** 2;
+                    if (dist2 <= ((body.size / 12)*250) ** 1.9) {
+                        if ((instance.team != body.team || (instance.type == "undertowEffect" && instance.master.id == body.master.id)) && instance.type != "wall" && instance.isTurret != true) {
+                            if (instance.type == "undertowEffect") {
+                                forceMulti = 1
+                            }
+                            else if (instance.type == "food") {
+                                forceMulti = (6 / instance.size)
+                            }
+                            else {
+                                forceMulti = (2 / instance.size)
+                            }
+                            instance.velocity.x += util.clamp(body.x - instance.x, -90, 90) * instance.damp * forceMulti;//0.05
+                            instance.velocity.y += util.clamp(body.y - instance.y, -90, 90) * instance.damp * forceMulti;//0.05
+                            if (instance.type != "undertowEffect" && instance.type != "bullet" && instance.type != "swarm" && instance.type != "drone" && instance.type != "trap" && instance.type != "dominator") {
+                                let o = new Entity({x: instance.x, y: instance.y})
+                                o.define('undertowEffect')
+                                o.team = body.team;
+                                o.color = instance.color;
+                                o.alpha = 0.3;
+                                o.master = body.master;
+                            }
+                        }
+                    }
+                    if (dist2 < body.size ** 3 + instance.size ** 3) {
+                        if (instance.master.id == body.master.id) {
+                            if (instance.type == "undertowEffect")
+                            {
+                                instance.kill();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+}
+Class.satelliteBullet = {
     PARENT: "bullet",
-    INDEPENDENT: true,
-    GUNS: [
-        {
-            POSITION: [8, 8, 1, 0, 0, 0, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic, g.pounder, { damage: 0.65, size: 2.4 }]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-        {
-            POSITION: [8, 8, 1, 0, 0, 30, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic, g.pounder, { damage: 0.65, size: 2.4 } ]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-        {
-            POSITION: [8, 8, 1, 0, 0, -30, 0],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic, g.pounder, { damage: 0.65, size: 2.4 }]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                SHOOT_ON_DEATH: true,
-            }
-        },
-    ]
+    ANGLE: 60,
+    CONTROLLERS: [["whirlwind", {useOwnMaster: true}]],
+    HAS_NO_RECOIL: true,
+    AI: {
+        SPEED: 2,
+    },
+    GUNS: (() => {
+        let output = []
+        for (let i = 0; i < 3; i++) {
+            output.push({
+                POSITION: {WIDTH: 16, LENGTH: 1, DELAY: 0},
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.satellite, {reload: 0}]),
+                    TYPE: ["satellite", {ANGLE: i * 120, INDEPENDENT: true}],
+                    MAX_CHILDREN: 1,
+                    AUTOFIRE: true,
+                    SYNCS_SKILLS: false,
+                    WAIT_TO_CYCLE: true
+                }
+            })
+        }
+        return output
+    })()
+}
+Class.satelliteTrap = {
+    PARENT: "trap",
+    ANGLE: 60,
+    CONTROLLERS: ["whirlwind"],
+    HAS_NO_RECOIL: true,
+    AI: {
+        SPEED: 2,
+    },
+    GUNS: (() => {
+        let output = []
+        for (let i = 0; i < 3; i++) {
+            output.push({
+                POSITION: {WIDTH: 16, LENGTH: 1, DELAY: 0},
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.satellite, {reload: 0}]),
+                    TYPE: ["satellite", {ANGLE: i * 120, INDEPENDENT: true}],
+                    MAX_CHILDREN: 1,
+                    AUTOFIRE: true,
+                    SYNCS_SKILLS: false,
+                    WAIT_TO_CYCLE: true,
+                    ALPHA: 0
+                }
+            })
+        }
+        return output
+    })()
 }
 
 // Missiles
@@ -182,12 +229,12 @@ Class.minimissile = {
 }
 Class.spinmissile = {
     PARENT: "missile",
-    CONTROLLERS: [["spin2", {speed: 0.1}]],
+    FACING_TYPE: ["spin", {speed: 0.2}],
     GUNS: weaponArray({
-        POSITION: [14, 8, 1, 0, 0, 0, 0],
+        POSITION: [14, 8, 1, 0, 0, 0, 0.5],
         PROPERTIES: {
             AUTOFIRE: !0,
-            SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
+            SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {reload: 0.6, size: 1.1, shudder: 0.3}]),
             TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
             STAT_CALCULATOR: "thruster",
             WAIT_TO_CYCLE: true,
@@ -250,8 +297,51 @@ Class.protoHive = {
         },
     }, 3, 1/3)
 }
-Class.snake = {
+Class.hyperHive = {
     PARENT: "bullet",
+    LABEL: "Hyper-Hive",
+    BODY: {
+        RANGE: 90,
+        FOV: 0.5,
+    },
+    FACING_TYPE: "turnWithSpeed",
+    INDEPENDENT: true,
+    CONTROLLERS: ["nearestDifferentMaster", "targetSelf"],
+    AI: { NO_LEAD: true },
+    GUNS: weaponArray({
+        POSITION: [7, 8, 0.6, 7, 0, 0, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.swarm, g.hive, g.bee]),
+            TYPE: ["bee", { PERSISTS_AFTER_DEATH: true }],
+            STAT_CALCULATOR: "swarm",
+            AUTOFIRE: true
+        },
+    }, 7, 1/7)
+}
+Class.snake = {
+    PARENT: "missile",
+    LABEL: "Snake",
+    GUNS: [
+        {
+            POSITION: [6, 12, 1.4, 8, 0, 180, 0],
+            PROPERTIES: {
+                AUTOFIRE: true,
+                STAT_CALCULATOR: "thruster",
+                SHOOT_SETTINGS: combineStats([g.basic, g.sniper, g.hunter, g.hunterSecondary, g.snake, g.snakeskin]),
+                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+            },
+        },
+        {
+            POSITION: [10, 12, 0.8, 8, 0, 180, 0.5],
+            PROPERTIES: {
+                AUTOFIRE: true,
+                NEGATIVE_RECOIL: true,
+                STAT_CALCULATOR: "thruster",
+                SHOOT_SETTINGS: combineStats([g.basic, g.sniper, g.hunter, g.hunterSecondary, g.snake]),
+                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+            },
+        },
+    ],
 }
 Class.rocketeerMissile = {
     PARENT: "missile",
@@ -363,25 +453,38 @@ Class.autoSmasherMissile = {
 // Healer Projectiles
 Class.healerBullet = {
     PARENT: "bullet",
+    HITS_OWN_TYPE: "push",
+    BODY: {
+        PENETRATION: Class.bullet.BODY.PENETRATION,
+        SPEED: Class.bullet.BODY.SPEED,
+        RANGE: Class.bullet.BODY.RANGE,
+        DENSITY: Class.bullet.BODY.DENSITY,
+        HEALTH: Class.bullet.BODY.HEALTH,
+        DAMAGE: Class.bullet.BODY.DAMAGE + 20,
+        PUSHABILITY: Class.bullet.BODY.PENETRATION,
+    },
     HEALER: true,
 };
-Class.surgeonPillbox = {
+Class.healerSanctuaryBullet = {
+    PARENT: "healerBullet",
+    HITS_OWN_TYPE: "never",
+};
+Class.medkit = {
     PARENT: "trap",
-    LABEL: "Pillbox",
+    LABEL: "Medkit",
     SHAPE: -6,
     MOTION_TYPE: "motor",
-    CONTROLLERS: ["goToMasterTarget", "nearestDifferentMaster"],
+    CONTROLLERS: ["goToMasterTarget"],
     INDEPENDENT: true,
     BODY: {
         SPEED: 1,
         DENSITY: 5,
-        DAMAGE: 0
     },
     DIE_AT_RANGE: true,
     TURRETS: [
         {
-            POSITION: [11, 0, 0, 0, 360, 1],
-            TYPE: "surgeonPillboxTurret",
+            POSITION: [13, 0, 0, 0, 360, 1],
+            TYPE: "medkitTurret",
         },
     ],
 }
@@ -394,7 +497,7 @@ Class.sunchip = {
     PARENT: "drone",
     SHAPE: 4,
     NECRO: true,
-    HITS_OWN_TYPE: "hard",
+    HITS_OWN_TYPE: "hardWithBuffer",
     BODY: {
         FOV: 0.5,
     },
@@ -456,6 +559,11 @@ Class.realchip = {
     NECRO: false,
     SHAPE: 6
 };
+Class.demonchip = {
+    PARENT: "sunchip",
+    NECRO: false,
+    SHAPE: 5
+};
 
 // Minions
 Class.minion = {
@@ -463,11 +571,11 @@ Class.minion = {
     LABEL: "Minion",
     TYPE: "minion",
     DAMAGE_CLASS: 0,
-    HITS_OWN_TYPE: "hard",
+    HITS_OWN_TYPE: "hardWithBuffer",
     FACING_TYPE: "smoothToTarget",
     BODY: {
         FOV: 0.5,
-        SPEED: 3,
+        SPEED: 1.8,
         ACCELERATION: 1,
         HEALTH: 5,
         SHIELD: 0,
@@ -532,6 +640,50 @@ Class.tinyMinion = {
     DIE_AT_RANGE: true,
     BUFF_VS_FOOD: true,
 }
+Class.megaMinion = {
+    PARENT: "minion",
+    LABEL: "Mega Minion",
+    BODY: {
+        FOV: 0.5,
+        SPEED: 3,
+        ACCELERATION: 0.7,
+        HEALTH: 5,
+        SHIELD: 0,
+        DAMAGE: 1.2,
+        RESIST: 1,
+        PENETRATION: 1,
+        DENSITY: 0.4,
+    },
+    GUNS: [
+        {
+            POSITION: [17, 13, 1, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.minionGun, g.pounder]),
+                WAIT_TO_CYCLE: true,
+                TYPE: "bullet",
+            },
+        },
+    ],
+}
+Class.desmosMinion = {
+    PARENT: "minion",
+    GUNS: [
+        {
+            POSITION: [20, 8, -4/3, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.desmos]),
+                TYPE: ["bullet", {CONTROLLERS: ['snake']}]
+            }
+        },
+        {
+            POSITION: [3.75, 10, 2.125, 1.5, -6.25, 90, 0]
+        },
+        {
+            POSITION: [3.75, 10, 2.125, 1.5, 6.25, -90, 0]
+        }
+    ]
+}
+Class.autoMinion = makeAuto("minion", {type: "droneAutoTurret"})
 Class.sentrySwarmMinion = {
     PARENT: 'drone',
     LABEL: 'sentry',
@@ -605,8 +757,10 @@ Class.assemblerTrap = {
     LABEL: "Assembler Trap",
     BODY: {
         SPEED: 0.7,
-        ACCEL: 0.75
+        ACCEL: 0.75,
+        RANGE: 200,
     },
+    DIE_AT_RANGE: true,
     TURRETS: [
         {
             POSITION: [4, 0, 0, 0, 360, 1],
@@ -619,6 +773,7 @@ Class.shotTrapBox = {
     PARENT: 'unsetTrap',
     MOTION_TYPE: "glide",
 }
+Class.autotrap = makeAuto("trap")
 
 // Pillboxes
 Class.pillbox = {
@@ -677,7 +832,7 @@ Class.bee = {
     HITS_OWN_TYPE: "hardWithBuffer"
 }
 Class.homingBullet = {
-    PARENT: "autoswarm",
+    PARENT: "swarm",
     SHAPE: 0,
     BODY: {
         PENETRATION: 1,
@@ -689,4 +844,82 @@ Class.homingBullet = {
         PUSHABILITY: 0.3,
     },
     CAN_GO_OUTSIDE_ROOM: true
+}
+Class.splitterBullet = {
+    PARENT: "bullet",
+    INDEPENDENT: true,
+    GUNS: [
+        {
+            POSITION: [8, 8, 1, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+        {
+            POSITION: [8, 8, 1, 0, 0, 30, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+        {
+            POSITION: [8, 8, 1, 0, 0, -30, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+    ],
+}
+Class.superSplitterBullet = {
+    PARENT: "bullet",
+    INDEPENDENT: true,
+    GUNS: [
+        {
+            POSITION: [8, 8, 1, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["splitterBullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+        {
+            POSITION: [8, 8, 1, 0, 0, 30, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["splitterBullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+        {
+            POSITION: [8, 8, 1, 0, 0, -30, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    g.basic,
+                    { size: 2.4, range: 0.1 },
+                ]),
+                TYPE: ["splitterBullet", { PERSISTS_AFTER_DEATH: true }],
+                SHOOT_ON_DEATH: true,
+            },
+        },
+    ],
 }
