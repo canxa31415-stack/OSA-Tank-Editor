@@ -1,0 +1,1232 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tank Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: #f5f5f5;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            border: 1px solid #333;
+            background: white;
+        }
+        .sidebar {
+            width: 600px;
+            padding: 20px;
+            background: #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .info {
+            width: 200px;
+            padding: 20px;
+            background: #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- <div>
+        <label for="shapeInput">Shape</label>
+        <input type="text" id="shapeInput" name="shapeInput" placeholder="Side amount" maxlength="200000" value="0">
+    </div>
+    <div>
+        <label for="colorInput">Color</label>
+        <input type="text" id="colorInput" name="colorInput" placeholder="Color" maxlength="200" value="0">
+    </div>
+    <div>
+        <label for="sizeInput">Size</label>
+        <input type="text" id="sizeInput" name="sizeInput" placeholder="12" maxlength="200" value="12">
+    </div>
+    <div>
+        <label for="scoreInput">Level</label>
+        <input type="text" id="scoreInput" name="scoreInput" placeholder="45" maxlength="200000" value="45">
+    </div>-->
+    <textarea id="codeInput" rows="20" cols="60">
+[
+    [bas1,bas1,____,____,____,____,roid,roid,roid,____,____,____,____,bas3,bas3],
+    [bas1,bap1,____,____,____,____,roid,roid,roid,____,____,____,____,bap3,bas3],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [bas4,bap4,____,____,____,____,roid,roid,roid,____,____,____,____,bap2,bas2],
+    [bas4,bas4,____,____,____,____,roid,roid,roid,____,____,____,____,bas2,bas2]
+]
+  </textarea><br>
+    <div>
+        <label for="mapTileWidth">Map Tile Width</label>
+        <input type="text" id="mapTileWidth" name="mapTileWidth" placeholder="420" maxlength="200000" value="420">
+        <label for="mapTileHeight">Map Tile Height</label>
+        <input type="text" id="mapTileHeight" name="mapTileHeight" placeholder="420" maxlength="200000" value="420">
+    </div>
+    <div>
+        <div>Zoom: <span id="zoomShow">1</span></div>
+        <label for="colorStyle">Style:</label>
+        <select id="colorStyle" name="colorStyle">
+            <option value="lightColors">Light Colors</option>
+            <option value="darkColors">Dark Colors</option>
+            <option value="naturalColors">Natural</option>
+            <option value="classicColors">Classic</option>
+        </select>
+    </div>
+    <div>
+        <label for="borderType">Border Type:</label>
+        <select id="borderType" name="borderType">
+            <option value="softBorders">Soft</option>
+            <option value="darkBorders">Dark</option>
+        </select>
+    </div>
+    <div>
+        <label for="newCanvasWidth">Canvas Width</label>
+        <input type="text" id="newCanvasWidth" name="newCanvasWidth" placeholder="700" maxlength="200000" value="700">
+        <label for="newCanvasHeight">Canvas Height</label>
+        <input type="text" id="newCanvasHeight" name="newCanvasHeight" placeholder="700" maxlength="200000" value="500">
+    </div>
+    <div>
+        <label for="errors">Error Messages:</label>
+        <select id="errors" name="errors">
+            <option value="false">False</option>
+            <option value="true">True</option>
+        </select>
+    </div>
+    <div>
+        <label for="showGrid">Show Grid:</label>
+        <select id="showGrid" name="showGrid">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+    </div>
+    <div>Tiles: ____, nest, bas1 - 8, bap1 - 8, wall, rock, roid, domn<span id="tiles">1</span></div>
+</div>
+
+<!-- Center canvas -->
+<div class="content">
+    <canvas id="canvas" width="700" height="700"></canvas>
+</div>
+
+<!-- Info panel -->
+<div class="info">
+    <div>
+        <div><span style="color: rgb(255,0,0);" id="currentError"></span></div>
+    </div>
+</div>
+<script src="settings.js"></script>
+<script src="extrafunctions.js"></script>
+<script src="color.js"></script>
+<script src="constants.js"></script>
+<script src="config.js"></script>
+<script src="gunvals.js"></script>
+<script src="facilitators.js"></script>
+<script src="food.js"></script>
+<script src="generics.js"></script>
+<script src="misc.js"></script>
+<script src="projectiles.js"></script>
+<script src="tanks.js"></script>
+<script src="dev.js"></script>
+<script src="turrets.js"></script>
+<script src="bosses.js"></script>
+<script>
+
+
+    let levelCap = 45;
+    let pointyTraps = false;
+    let allowErrors = document.getElementById('errors').value;
+    let currentError = document.getElementById('currentError');
+    let showGrid = eval(document.getElementById('showGrid').value);
+    let showHitbox = false;
+    let animateIt = false;
+    let animT = 0
+    let lazyRealSizes = [1, 1, 1];
+    let mapTileWidth = document.getElementById('mapTileWidth').value
+    let mapTileHeight = document.getElementById('mapTileHeight').value
+    for (let i = 3; i < 17; i++) {
+        // We say that the real size of a 0-gon, 1-gon, 2-gon is one, then push the real sizes of triangles, squares, etc...
+        let circum = (2 * Math.PI) / i;
+        lazyRealSizes.push(Math.sqrt(circum * (1 / Math.sin(circum))));
+    }
+    const drawPolyImgs = [];
+    function drawPoly(context, centerX, centerY, radius, sides, angle = 0, borderless, fill, imageInterpolation) {
+        try {
+            let fixedRadius = radius
+            if (lazyRealSizes.length > Math.abs(sides)) {
+                fixedRadius = radius * lazyRealSizes[Math.abs(Math.floor(sides))];
+            }
+            // Start drawing
+            context.beginPath();
+            if (sides instanceof Array) {
+                let dx = Math.cos(angle);
+                let dy = Math.sin(angle);
+                for (let [x, y] of sides)
+                    context.lineTo(
+                        centerX + fixedRadius * (x * dx - y * dy),
+                        centerY + fixedRadius * (y * dx + x * dy)
+                    );
+            } else {
+                if ("string" === typeof sides) {
+                    //ideally we'd preload images when mockups are loaded but im too lazy for that atm
+                    if (sides.startsWith('/') | sides.startsWith('./') | sides.startsWith('http')) {
+                        drawPolyImgs[sides] = new Image();
+                        drawPolyImgs[sides].src = sides;
+                        drawPolyImgs[sides].isBroken = false;
+                        drawPolyImgs[sides].onerror = function() {
+                            this.isBroken = true;
+                        }
+
+                        let img = drawPolyImgs[sides];
+                        context.translate(centerX, centerY);
+                        context.rotate(angle);
+                        context.imageSmoothingEnabled = imageInterpolation;
+                        context.drawImage(img, -fixedRadius, -fixedRadius, fixedRadius*2, fixedRadius*2);
+                        context.imageSmoothingEnabled = true;
+                        context.rotate(-angle);
+                        context.translate(-centerX, -centerY);
+                        return;
+                    }
+                    let path = new Path2D(sides);
+                    context.save();
+                    context.translate(centerX, centerY);
+                    context.scale(fixedRadius, fixedRadius);
+                    context.lineWidth /= fixedRadius;
+                    context.rotate(angle);
+                    context.lineWidth *= fill ? 1 : 0.5; // Maintain constant border width
+                    if (!borderless) context.stroke(path);
+                    if (fill) context.fill(path);
+                    context.restore();
+                    return;
+                }
+                angle += sides % 2 ? 0 : Math.PI / sides;
+            }
+            if (!sides) {
+                // Circle
+                let fillcolor = context.fillStyle;
+                let strokecolor = context.strokeStyle;
+                context.arc(centerX, centerY, fixedRadius, 0, 2 * Math.PI);
+                context.fillStyle = strokecolor;
+                context.lineWidth *= fill ? 1 : 0.5; // Maintain constant border width
+                if (!borderless) context.stroke();
+                context.closePath();
+                context.beginPath();
+                context.fillStyle = fillcolor;
+                context.arc(centerX, centerY, fixedRadius * fill, 0, 2 * Math.PI);
+                if (fill) context.fill();
+                context.closePath();
+                return;
+            } else if (sides < 0) {
+                // Star
+                if (pointyTraps === true) context.lineJoin = "miter";
+                sides = -sides;
+                angle += (sides % 1) * Math.PI * 2;
+                sides = Math.floor(sides);
+                let dip = 1 - 6 / (sides ** 2);
+                context.moveTo(centerX + fixedRadius * Math.cos(angle), centerY + fixedRadius * Math.sin(angle));
+                context.lineWidth *= fill ? 1 : 0.5; // Maintain constant border width
+                for (let i = 0; i < sides; i++) {
+                    let htheta = ((i + 0.5) / sides) * 2 * Math.PI + angle,
+                        theta = ((i + 1) / sides) * 2 * Math.PI + angle,
+                        cx = centerX + fixedRadius * dip * Math.cos(htheta),
+                        cy = centerY + fixedRadius * dip * Math.sin(htheta),
+                        px = centerX + fixedRadius * Math.cos(theta),
+                        py = centerY + fixedRadius * Math.sin(theta);
+                    /*if (curvyTraps) {
+                        context.quadraticCurveTo(cx, cy, px, py);
+                    } else {
+                        context.lineTo(cx, cy);
+                        context.lineTo(px, py);
+                    }*/
+                    context.quadraticCurveTo(cx, cy, px, py);
+                }
+            } else if (sides > 0) {
+                // Polygon
+                angle += (sides % 1) * Math.PI * 2;
+                sides = Math.floor(sides);
+                context.lineWidth *= fill ? 1 : 0.5; // Maintain constant border width
+                for (let i = 0; i < sides; i++) {
+                    let theta = (i / sides) * 2 * Math.PI + angle;
+                    context.lineTo(centerX + fixedRadius * Math.cos(theta), centerY + fixedRadius * Math.sin(theta));
+                }
+            }
+            context.closePath();
+            if (!borderless) context.stroke();
+            if (fill) context.fill();
+            context.lineJoin = "round";
+        } catch (e) { // this actually prevents to panic the client. so we will just call "resizeEvent()".
+            resizeEvent();
+            console.error("Uh oh, 'CanvasRenderingContext2D' has gotton an error! Error: " + e);
+        }
+    }
+    function drawTrapezoid(
+        context, x, y,
+        length, height, aspect, angle,
+        borderless, fill, alpha, strokeWidth,
+        offsetX, offsetY // <-- added vertical offset
+    ) {
+        let h = aspect > 0 ? [height * aspect, height] : [height, -height * aspect];
+
+        // Construct a trapezoid at angle 0
+        let points = [],
+            sinT = Math.sin(angle),
+            cosT = Math.cos(angle);
+
+        points.push([-offsetX,  h[1] - offsetY]);
+        points.push([ length * 2 - offsetX,  h[0] - offsetY]);
+        points.push([ length * 2 - offsetX, -h[0] - offsetY]);
+        points.push([-offsetX, -h[1] - offsetY]);
+
+        context.globalAlpha = alpha;
+        context.beginPath();
+
+        for (let point of points) {
+            let newX = point[0] * cosT - point[1] * sinT + x,
+                newY = point[0] * sinT + point[1] * cosT + y;
+            context.lineTo(newX, newY);
+        }
+
+        context.closePath();
+        context.lineWidth *= strokeWidth;
+        context.lineWidth *= fill ? 1 : 0.5; // Maintain constant border width
+
+        if (!borderless) context.stroke();
+        context.lineWidth /= fill ? 1 : 0.5;
+
+        if (fill) context.fill();
+        context.globalAlpha = 1;
+    }
+
+    function calcColor(color) {
+        if (isObject(color)) {
+            if (color.BASE) {
+                return shiftColor(getColor(color.BASE), color.HUE_SHIFT || 0, color.SATURATION_SHIFT || 1, color.BRIGHTNESS_SHIFT || 0);
+            } else {
+                return getColor("grey");
+            }
+        } else {
+            return getColor(color);
+        }
+    }
+    function angleToPoint(x1, y1, x2, y2) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+
+        return radiansToDegrees(Math.atan2(dy, dx));
+    }
+    let fighterX = (canvas.width / 2)
+    let fighterY = (canvas.height / 2)
+
+    /*document.addEventListener('mousemove', function(event) {
+        if (!isDragging) return;
+        if (!animateIt === true) {
+            fighterX = event.clientX - 505;
+            fighterY = event.clientY + 33;
+        }
+    });*/
+
+    let fighterXD = 0
+    let fighterYD = 0
+    let dontShowHitter = false
+    document.addEventListener('keypress', function(event) {
+        const el = document.activeElement;
+        const isTyping =
+            el && (
+                el.tagName === "TEXTAREA" ||
+                (el.tagName === "INPUT" && el.type !== "button" && el.type !== "checkbox" && el.type !== "radio") ||
+                el.isContentEditable
+            );
+        if (isTyping) {
+            return;
+        }
+        if (event.key === "a") {
+            fighterXD -= 1
+        }
+        if (event.key === "d") {
+            fighterXD += 1
+        }
+        if (event.key === "w") {
+            fighterYD -= 1
+        }
+        if (event.key === "s") {
+            fighterYD += 1
+        }
+        if (event.key === " ") {
+            if (dontShowHitter === true) {
+                dontShowHitter = false
+            } else if (dontShowHitter === false) {
+                dontShowHitter = true
+            }
+        }
+    });
+    const drawEntity = (baseColor, x, y, code, rotation) => {
+        animateIt = false;
+        let rotationDif = 0
+        let rotationDif2 = null
+        if (animateIt === true) {
+            if (code.FACING_TYPE === 'spin') {
+                rotationDif = rotation+(0.04*(animT*170))
+            } else if (code.FACING_TYPE.includes('spin')) {
+                rotationDif = rotation+(code.FACING_TYPE[1].speed*(animT*170))
+            }
+            if (code.CONTROLLERS === 'nearestDifferentMaster' || code.CONTROLLERS.includes('nearestDifferentMaster')) {
+                rotationDif2 = radiansToDegrees(angleToPoint(x, y, fighterX, fighterY))
+//            console.log(rotationDif2)
+            } else {
+                rotationDif2 = null
+            }
+        }
+//    console.log(baseColor, x, y, code);
+        ctx.lineWidth = zoom*4.175;
+        function turretStuffsBelow() {
+            for(let i = 0; i < code.TURRETS.length; i++) {
+                if (code.TURRETS[i].POSITION[5] === 0) {
+                    if (Array.isArray(code.TURRETS[i].TYPE)) {
+                        turretCode = {...Class[code.TURRETS[i].TYPE[0]], ...code.TURRETS[i].TYPE[1]}
+                    } else {
+                        turretCode = Class[code.TURRETS[i].TYPE]
+                    }
+                    newTurretCode = { ...Class.genericEntity };
+                    if (turretCode) {
+                        let turretParent = turretCode.PARENT;
+                        const turretAncestry = [];
+                        while (parent && Class[turretParent]) {
+                            turretAncestry.unshift(Class[turretParent]);
+                            turretParent = Class[turretParent].PARENT;
+                        }
+                        for (const turretAncestor of turretAncestry) {
+                            newTurretCode = { ...newTurretCode, ...turretAncestor };
+                        }
+                    }
+                    newTurretCode = { ...newTurretCode, ...turretCode };
+                    if (newTurretCode.COLOR.BASE === "mirror" || newTurretCode.COLOR.BASE === -1 || newTurretCode.COLOR === "mirror" || newTurretCode.COLOR === -1) {
+                        newTurretCode = { ...newTurretCode, COLOR: code.COLOR };
+                    }
+                    let newTurretPos = rotatePoint(x+(code.TURRETS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.TURRETS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.TURRETS[i].POSITION[3]+rotation+degreesToRadians(rotationDif)))
+                    let turretRotationDif2 = null
+                    if (animateIt === true) {
+                        turretRotationDif2 = radiansToDegrees(angleToPoint(newTurretPos[0], newTurretPos[1], fighterX, fighterY))
+                        if (
+                            newTurretCode.FACING_TYPE === 'spin' ||
+                            newTurretCode.FACING_TYPE.includes('spin') ||
+                            newTurretCode.MIRROR_MASTER_ANGLE === true ||
+                            newTurretCode.INDEPENDENT === true
+                        ) {
+                            turretRotationDif2 = null
+                        } else {
+                        }
+                    }
+//                if (!isDragging) turretRotationDif2 = null
+                    drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation+degreesToRadians(rotationDif))
+                }
+            }
+        }
+        function turretStuffsAbove() {
+            for(let i = 0; i < code.TURRETS.length; i++) {
+                if (code.TURRETS[i].POSITION[5] === 1) {
+                    if (Array.isArray(code.TURRETS[i].TYPE)) {
+                        turretCode = {...Class[code.TURRETS[i].TYPE[0]], ...code.TURRETS[i].TYPE[1]}
+                    } else {
+                        turretCode = Class[code.TURRETS[i].TYPE]
+                    }
+                    newTurretCode = { ...Class.genericEntity };
+                    if (turretCode) {
+                        let turretParent = turretCode.PARENT;
+                        const turretAncestry = [];
+                        while (parent && Class[turretParent]) {
+                            turretAncestry.unshift(Class[turretParent]);
+                            turretParent = Class[turretParent].PARENT;
+                        }
+                        for (const turretAncestor of turretAncestry) {
+                            newTurretCode = { ...newTurretCode, ...turretAncestor };
+                        }
+                    }
+                    newTurretCode = { ...newTurretCode, ...turretCode };
+                    if (newTurretCode.COLOR.BASE === "mirror" || newTurretCode.COLOR.BASE === -1 || newTurretCode.COLOR === "mirror" || newTurretCode.COLOR === -1) {
+                        newTurretCode = { ...newTurretCode, COLOR: code.COLOR };
+                    }
+                    let newTurretPos = rotatePoint(x+(code.TURRETS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.TURRETS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.TURRETS[i].POSITION[3]+rotation))
+                    let turretRotationDif2 = null
+                    if (animateIt === true) {
+                        turretRotationDif2 = radiansToDegrees(angleToPoint(newTurretPos[0], newTurretPos[1], fighterX, fighterY))
+                        if (
+                            newTurretCode.FACING_TYPE === 'spin' ||
+                            newTurretCode.FACING_TYPE.includes('spin') ||
+                            newTurretCode.MIRROR_MASTER_ANGLE === true ||
+                            newTurretCode.INDEPENDENT === true
+                        ) {
+                            turretRotationDif2 = null
+                        }
+                    }
+//                if (!isDragging) turretRotationDif2 = null
+                    drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newTurretCode, SIZE: code.SIZE * (code.TURRETS[i].POSITION[0]/20)}, degreesToRadians(turretRotationDif2) || code.TURRETS[i].POSITION[3]+rotation)
+                }
+            }
+        }
+        function propStuffsBelow() {
+            for(let i = 0; i < code.PROPS.length; i++) {
+                if (code.PROPS[i].POSITION[4] === 0) {
+                    if (Array.isArray(code.PROPS[i].TYPE)) {
+                        propCode = {...Class[code.PROPS[i].TYPE[0]], ...code.PROPS[i].TYPE[1]}
+                    } else {
+                        propCode = Class[code.PROPS[i].TYPE]
+                    }
+                    newPropCode = { ...Class.genericEntity };
+                    if (propCode) {
+                        let turretParent = propCode.PARENT;
+                        const turretAncestry = [];
+                        while (parent && Class[turretParent]) {
+                            turretAncestry.unshift(Class[turretParent]);
+                            turretParent = Class[turretParent].PARENT;
+                        }
+                        for (const turretAncestor of turretAncestry) {
+                            newPropCode = { ...newPropCode, ...turretAncestor };
+                        }
+                    }
+                    newPropCode = { ...newPropCode, ...propCode };
+                    if (newPropCode.COLOR.BASE === "mirror" || newPropCode.COLOR.BASE === -1 || newPropCode.COLOR === "mirror" || newPropCode.COLOR === -1) {
+                        newPropCode = { ...newPropCode, COLOR: code.COLOR };
+                    }
+                    let newTurretPos = rotatePoint(x+(code.PROPS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.PROPS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.PROPS[i].POSITION[3]+rotation))
+                    drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newPropCode, SIZE: code.SIZE * (code.PROPS[i].POSITION[0]/20)}, code.PROPS[i].POSITION[3]+rotation)
+                }
+            }
+        }
+        function propStuffsAbove() {
+            for(let i = 0; i < code.PROPS.length; i++) {
+                if (code.PROPS[i].POSITION[4] === 1) {
+                    if (Array.isArray(code.PROPS[i].TYPE)) {
+                        propCode = {...Class[code.PROPS[i].TYPE[0]], ...code.PROPS[i].TYPE[1]}
+                    } else {
+                        propCode = Class[code.PROPS[i].TYPE]
+                    }
+                    newPropCode = { ...Class.genericEntity };
+                    if (propCode) {
+                        let turretParent = propCode.PARENT;
+                        const turretAncestry = [];
+                        while (parent && Class[turretParent]) {
+                            turretAncestry.unshift(Class[turretParent]);
+                            turretParent = Class[turretParent].PARENT;
+                        }
+                        for (const turretAncestor of turretAncestry) {
+                            newPropCode = { ...newPropCode, ...turretAncestor };
+                        }
+                    }
+                    newPropCode = { ...newPropCode, ...propCode };
+                    if (newPropCode.COLOR.BASE === "mirror" || newPropCode.COLOR.BASE === -1 || newPropCode.COLOR === "mirror" || newPropCode.COLOR === -1) {
+                        newPropCode = { ...newPropCode, COLOR: code.COLOR };
+                    }
+                    let newTurretPos = rotatePoint(x+(code.PROPS[i].POSITION[1]/20 * code.SIZE * 2 * zoom), y+(code.PROPS[i].POSITION[2]/20 * code.SIZE * 2 * zoom), x, y, degreesToRadians(code.PROPS[i].POSITION[3]+rotation))
+                    drawEntity("#FF44FF", newTurretPos[0], newTurretPos[1], {...Class.genericEntity, ...newPropCode, SIZE: code.SIZE * (code.PROPS[i].POSITION[0]/20)}, code.PROPS[i].POSITION[3]+rotation)
+                }
+            }
+        }
+        if (code.TURRETS) {
+            turretStuffsBelow()
+        }
+        if (code.PROPS) {
+            propStuffsBelow()
+        }
+        for(let i = 0; i < code.GUNS.length; i++) {
+            if (code.GUNS[i].PROPERTIES) {
+                ctx.fillStyle = getColor(code.GUNS[i].PROPERTIES.COLOR || "grey");
+                ctx.strokeStyle = getColorDark(getColor(code.GUNS[i].PROPERTIES.COLOR || "grey"));
+            } else {
+                ctx.fillStyle = getColor("grey");
+                ctx.strokeStyle = getColorDark(getColor("grey"));
+            }
+            if (isObject(code.GUNS[i].POSITION)) {
+                if (code.GUNS[i].PROPERTIES) {
+                    drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE)+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
+                } else {
+                    drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION.LENGTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.WIDTH*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION.ASPECT || 1, degreesToRadians(code.GUNS[i].POSITION.ANGLE)+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, false,  true, 1, 1, -code.GUNS[i].POSITION.X*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION.Y*2*(code.SIZE/20)*zoom || 0)
+                }
+            } else {
+                if (code.GUNS[i].PROPERTIES) {
+                    drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5])+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, code.GUNS[i].PROPERTIES.BORDERLESS || false, code.GUNS[i].PROPERTIES.DRAW_FILL || true, (code.ALPHA || 1) * (code.GUNS[i].PROPERTIES.ALPHA || 1), 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
+                } else {
+                    drawTrapezoid(ctx, x, y,code.GUNS[i].POSITION[0]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[1]*(code.SIZE/20)*zoom || zoom, code.GUNS[i].POSITION[2] || 1, degreesToRadians(code.GUNS[i].POSITION[5])+degreesToRadians(rotation+degreesToRadians(rotationDif)) || 0, false, true,  1, 1, -code.GUNS[i].POSITION[3]*2*(code.SIZE/20)*zoom || 0, -code.GUNS[i].POSITION[4]*2*(code.SIZE/20)*zoom || 0)
+                }
+            }
+        }
+        ctx.fillStyle = calcColor(code.COLOR);
+        ctx.strokeStyle = getColorDark(calcColor(code.COLOR));
+        ctx.globalAlpha = code.ALPHA || 1
+        drawPoly(ctx, x, y, code.SIZE*zoom, code.SHAPE, degreesToRadians(rotation+degreesToRadians(rotationDif)), code.BORDERLESS, code.DRAW_FILL, true)
+        if (code.TURRETS) {
+            turretStuffsAbove()
+        }
+        if (code.PROPS) {
+            propStuffsAbove()
+        }
+    };
+    function drawGrid(ctx, centerX, centerY, spacingX, spacingY, color, color2) {
+        showGrid = eval(document.getElementById('showGrid').value);
+        if (showGrid === true) {
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+
+
+            ctx.globalAlpha = 1
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+            ctx.strokeStyle = color2;
+            ctx.lineWidth = 1*zoom;
+            ctx.globalAlpha = 0.04
+            ctx.beginPath();
+
+            // Vertical lines
+            for (let x = (centerX-(offsetX/zoom)) % (spacingX*zoom); x <= width; x += (spacingX*zoom)) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+            for (let x = (centerX-(offsetX/zoom)) - (spacingX*zoom); x >= 0; x -= (spacingX*zoom)) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+
+            // Horizontal lines
+            for (let y = (centerY-(offsetY/zoom)) % (spacingY*zoom); y <= height; y += (spacingY*zoom)) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+            for (let y = (centerY-(offsetY/zoom)) - (spacingY*zoom); y >= 0; y -= (spacingY*zoom)) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+
+            ctx.stroke();
+        } else {
+            return
+        }
+    }
+    function drawTank(tankCode = {}, x = (canvas.width / 2)-(offsetX/zoom), y = (canvas.height / 2)-(offsetY/zoom)) {
+        let x2 = (x*zoom)+(canvas.width / 2)-(offsetX/zoom)
+        let y2 = (y*zoom)+(canvas.height / 2)-(offsetY/zoom)
+        code = { ...Class.genericEntity };
+        let parent = tankCode.PARENT;
+        const ancestry = [];
+        while (parent && Class[parent]) {
+            ancestry.unshift(Class[parent]);
+            parent = Class[parent].PARENT;
+        }
+        for (const ancestor of ancestry) {
+            code = { ...code, ...ancestor };
+        }
+        code = { ...code, ...tankCode };
+        if (code.VALUE || code.LEVEL) {
+            if (invertedApproximateScore(code.VALUE) > code.LEVEL) {
+                code.LEVEL = invertedApproximateScore(code.VALUE)
+            }
+            realScore = Math.min(parseFloat(code.LEVEL), parseFloat(levelCap.value))
+            if (code.LEVEL_CAP) {
+                realScore = Math.min(parseFloat(code.LEVEL), parseFloat(code.LEVEL_CAP))
+            }
+            realSize = code.SIZE * (1 + realScore / 45)
+        } else {
+            realSize = code.SIZE
+        }
+        code = { ...code, SIZE: realSize };
+        if (isObject(code.COLOR)) {
+            let fixedColor = code.COLOR
+            if (code.COLOR.BASE === -1 || code.COLOR.BASE === "mirror") {
+                fixedColor = {BASE: "blue", HUE_SHIFT: code.COLOR.HUE_SHIFT, BRIGHTNESS_SHIFT: code.COLOR.BRIGHTNESS_SHIFT, SATURATION_SHIFT: code.COLOR.SATURATION_SHIFT}
+                code = { ...code, COLOR: fixedColor };
+            }
+        }
+        return drawEntity("#FF44FF", x2, y2, code, 0)
+    }
+    let dominator = {
+        PARENT: "genericTank",
+        LABEL: "Dominator",
+        UPGRADE_LABEL: 'Unknown',
+        ON_MINIMAP: false,
+        DANGER: 7,
+        SKILL: skillSet({
+            rld: 1,
+            dam: 1,
+            pen: 1,
+            str: 1,
+            spd: 1,
+        }),
+        LEVEL: 45,
+        LEVEL_CAP: 45,
+        SIZE: 50,
+        SYNC_WITH_TANK: true,
+        BODY: {
+            RESIST: 100,
+            SPEED: 1.32,
+            ACCELERATION: 0.8,
+            HEALTH: 590,
+            DAMAGE: 6,
+            PENETRATION: 0.25,
+            FOV: 0.5,
+            PUSHABILITY: 0,
+            HETERO: 0,
+            SHIELD: base.SHIELD * 1.4
+        },
+        CONTROLLERS: ["nearestDifferentMaster", ["spin", { onlyWhenIdle: true }]],
+        DISPLAY_NAME: true,
+        TURRETS: [
+            {
+                POSITION: [22, 0, 0, 90, 360, 0],
+                TYPE: "dominationBody"
+            }
+        ],
+        CAN_BE_ON_LEADERBOARD: false,
+        GIVE_KILL_MESSAGE: false,
+        ACCEPTS_SCORE: false,
+        HITS_OWN_TYPE: "pushOnlyTeam"
+    }
+    let dominators = {
+        NOTHING: {
+            PARENT: "dominator",
+            UPGRADE_LABEL: 'Nothing',
+            GUNS: []
+        },
+        DESTROYER: {
+            PARENT: "dominator",
+            UPGRADE_LABEL: 'Destroyer',
+            GUNS: [
+                {
+                    POSITION: [15.25, 6.75, 1, 0, 0, 0, 0],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.destroyerDominator]),
+                        TYPE: "bullet"
+                    }
+                },
+                {
+                    POSITION: [5, 6.75, -1.6, 6.75, 0, 0, 0]
+                }
+            ]
+        },
+        GUNNER: {
+            PARENT: "dominator",
+            UPGRADE_LABEL: 'Gunner',
+            GUNS: [
+                {
+                    POSITION: [14.25, 3, 1, 0, -2, 0, 0.5],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.gunnerDominator]),
+                        TYPE: "bullet"
+                    }
+                },
+                {
+                    POSITION: [14.25, 3, 1, 0, 2, 0, 0.5],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.gunnerDominator]),
+                        TYPE: "bullet"
+                    }
+                },
+                {
+                    POSITION: [15.85, 3, 1, 0, 0, 0, 0],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.gunnerDominator]),
+                        TYPE: "bullet"
+                    }
+                },
+                {
+                    POSITION: [5, 8.5, -1.6, 6.25, 0, 0, 0]
+                }
+            ]
+        },
+        TRAPPER: {
+            PARENT: "dominator",
+            UPGRADE_LABEL: 'Trapper',
+            FACING_TYPE: ["spin", {speed: 0.02}],
+            GUNS: weaponArray([
+                {
+                    POSITION: [4, 3.75, 1, 8, 0, 0, 0]
+                },
+                {
+                    POSITION: [1.25, 3.75, 1.7, 12, 0, 0, 0],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.trap, g.trapperDominator]),
+                        TYPE: "trap",
+                        STAT_CALCULATOR: "trap",
+                        AUTOFIRE: true
+                    }
+                }
+            ], 8)
+        },
+        BASE: {
+            PARENT: "dominator",
+            LABEL: "Base",
+            UPGRADE_LABEL: "Base Protector",
+            ON_MINIMAP: false,
+            SIZE: 64,
+            LEVEL: 0,
+            LEVEL_CAP: 0,
+            DAMAGE_CLASS: 0,
+            ACCEPTS_SCORE: false,
+            CAN_BE_ON_LEADERBOARD: false,
+            IGNORED_BY_AI: true,
+            HITS_OWN_TYPE: "pushOnlyTeam",
+            SKILL: skillSet({
+                rld: 1,
+                dam: 1,
+                pen: 1,
+                spd: 1,
+                str: 1,
+            }),
+            BODY: {
+                SPEED: 0,
+                HEALTH: 1e4,
+                DAMAGE: 10,
+                PENETRATION: 0.25,
+                SHIELD: 1e3,
+                REGEN: 100,
+                FOV: 1,
+                PUSHABILITY: 0,
+                RESIST: 10000,
+                HETERO: 0,
+            },
+            FACING_TYPE: ["spin", {speed: 0.02}],
+            TURRETS: [
+                {
+                    POSITION: [25, 0, 0, 90, 360, 0],
+                    TYPE: "dominationBody",
+                },
+                ...weaponArray({
+                    POSITION: [12, 7, 0, 45, 100, 0],
+                    TYPE: "baseSwarmTurret",
+                }, 4)
+            ],
+            GUNS: weaponArray([
+                {
+                    POSITION: [4.5, 11.5, -1.3, 6, 0, 45, 0],
+                },
+                {
+                    POSITION: [4.5, 8.5, -1.5, 7, 0, 45, 0],
+                },
+            ], 4)
+        },
+        ANTI: {
+            PARENT: "dominator",
+            LABEL: "Anti-Tank Machine Gun",
+            UPGRADE_LABEL: "A.T.M.G.",
+            CONTROLLERS: [['spin', {onlyWhenIdle: true}], 'nearestDifferentMaster'],
+            LEVEL: 45,
+            SIZE: 12,
+            BODY: {
+                RESIST: 100,
+                SPEED: 1.32,
+                ACCELERATION: 0.8,
+                HEALTH: 1e99,
+                DAMAGE: 6,
+                PENETRATION: 0.25,
+                FOV: 0.35,
+                PUSHABILITY: 0,
+                HETERO: 0,
+                SHIELD: base.SHIELD * 1.4,
+            },
+            SKILL_CAP: Array(10).fill(255),
+            SKILL: Array(10).fill(255),
+            GUNS: [
+                {
+                    POSITION: [18, 12, 0.8, 0, 0, 90, 0],
+                },
+                {
+                    POSITION: [18, 12, 0.8, 0, 0, 270, 0],
+                },
+                {
+                    POSITION: [14.25, 3, 1, 0, -2, 0, 0.5],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.op, {recoil: 0, spray: 0.1}]),
+                        TYPE: "bullet",
+                    },
+                },
+                {
+                    POSITION: [14.25, 3, 1, 0, 2, 0, 0.5],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.op, {recoil: 0, spray: 0.1}]),
+                        TYPE: "bullet",
+                    },
+                },
+                {
+                    POSITION: [15.85, 3, 1, 0, 0, 0, 0],
+                    PROPERTIES: {
+                        SHOOT_SETTINGS: combineStats([g.basic, g.op, {recoil: 0, spray: 0.1}]),
+                        TYPE: "bullet",
+                    },
+                },
+                {
+                    POSITION: [5, 8.5, -1.6, 6.25, 0, 0, 0],
+                },
+            ],
+            TURRETS: [{
+                POSITION: [20, 0, 25, 0, 180, 1],
+                TYPE: ["antiTankMachineGunArm"]
+            }, {
+                POSITION: [20, 0, -25, 0, 180, 1],
+                TYPE: ["antiTankMachineGunArm"]
+            }, {
+                POSITION: [22, 0, 0, 90, 360, 0],
+                TYPE: ["dominationBody"]
+            }]
+        }
+    }
+    let domList = []
+    for (let i = 0; i < 256; i++) {
+        domList.push([dominators.DESTROYER, dominators.GUNNER, dominators.TRAPPER][Math.random() * 3])
+    }
+    let walls = {
+        REGULAR: {
+            PARENT: "rock",
+            LABEL: "Wall",
+            SIZE: 25,
+            SHAPE: 4,
+            VARIES_IN_SIZE: false
+        },
+        ROCK: {
+            PARENT: "rock",
+        },
+        STONE: {
+            PARENT: "rock",
+            LABEL: "Stone",
+            SIZE: 32,
+            SHAPE: -7
+        },
+        GRAVEL: {
+            PARENT: "rock",
+            LABEL: "Gravel",
+            SIZE: 16,
+            SHAPE: -7
+        }
+    }
+    function randomInside(x, y, tileWidth, tileHeight, roomWidth, roomHeight) {
+        return {
+            x: tileWidth * (x + Math.random()) - roomWidth / 2,
+            y: tileHeight * (y + Math.random()) - roomHeight / 2
+        }
+    }
+    function drawMap(map) {
+        let ____ = {
+            COLOR: null,
+            ENTITY: null,
+        }
+        let bas1 = {
+            COLOR: getColor("blue"),
+            ENTITY: null,
+        }
+        let bas2 = {
+            COLOR: getColor("green"),
+            ENTITY: null,
+        }
+        let bas3 = {
+            COLOR: getColor("red"),
+            ENTITY: null,
+        }
+        let bas4 = {
+            COLOR: getColor("magenta"),
+            ENTITY: null,
+        }
+        let bas5 = {
+            COLOR: getColor("mustard"),
+            ENTITY: null,
+        }
+        let bas6 = {
+            COLOR: getColor("tangerine"),
+            ENTITY: null,
+        }
+        let bas7 = {
+            COLOR: getColor("brown"),
+            ENTITY: null,
+        }
+        let bas8 = {
+            COLOR: getColor("cyan"),
+            ENTITY: null,
+        }
+        let bap1 = {
+            COLOR: getColor("blue"),
+            ENTITY: dominators.BASE,
+        }
+        let bap2 = {
+            COLOR: getColor("green"),
+            ENTITY: dominators.BASE,
+        }
+        let bap3 = {
+            COLOR: getColor("red"),
+            ENTITY: dominators.BASE,
+        }
+        let bap4 = {
+            COLOR: getColor("magenta"),
+            ENTITY: dominators.BASE,
+        }
+        let bap5 = {
+            COLOR: getColor("mustard"),
+            ENTITY: dominators.BASE,
+        }
+        let bap6 = {
+            COLOR: getColor("tangerine"),
+            ENTITY: dominators.BASE,
+        }
+        let bap7 = {
+            COLOR: getColor("brown"),
+            ENTITY: dominators.BASE,
+        }
+        let bap8 = {
+            COLOR: getColor("cyan"),
+            ENTITY: dominators.BASE,
+        }
+        let roid = {
+            COLOR: null,
+            ENTITY: null,
+            PLACE_ROIDS: true,
+        }
+        let rock = {
+            COLOR: null,
+            ENTITY: null,
+            PLACE_ROCKS: true,
+        }
+        let nest = {
+            COLOR: getColor("lavender"),
+            ENTITY: null,
+        }
+        let wall = {
+            COLOR: null,
+            ENTITY: walls.REGULAR,
+            TILE_SCALE: true
+        }
+        let domn = {
+            COLOR: getColor("yellow"),
+            ENTITY: dominators.NOTHING,
+        }
+        mapTileWidth = parseFloat(document.getElementById('mapTileWidth').value)
+        mapTileHeight = parseFloat(document.getElementById('mapTileHeight').value)
+        let fixedMap = eval("(" + map + ")")
+        let y = (fixedMap.length/2) * -mapTileHeight
+        y += (mapTileHeight/2)
+        let ent = {}
+        for (let i = 0; i < fixedMap.length; i++) {
+            let x = (fixedMap[0].length/2) * -mapTileWidth
+            x += (mapTileWidth/2)
+            for (let j = 0; j < fixedMap[i].length; j++) {
+                if (fixedMap[i][j].COLOR !== null) {
+                    ctx.globalAlpha = 0.3
+                    x2 = (x*zoom)+(canvas.width / 2)-(offsetX/zoom)
+                    y2 = (y*zoom)+(canvas.height / 2)-(offsetY/zoom)
+                    ctx.beginPath();
+                    ctx.lineTo(x2+((mapTileWidth*zoom)/2), y2+((mapTileHeight*zoom)/2))
+                    ctx.lineTo(x2+((mapTileWidth*zoom)/2), y2-((mapTileHeight*zoom)/2))
+                    ctx.lineTo(x2-((mapTileWidth*zoom)/2), y2-((mapTileHeight*zoom)/2))
+                    ctx.lineTo(x2-((mapTileWidth*zoom)/2), y2+((mapTileHeight*zoom)/2))
+                    ctx.closePath();
+                    ctx.fillStyle = fixedMap[i][j].COLOR;
+                    ctx.fill()
+                    ctx.globalAlpha = 1
+                }
+                if (fixedMap[i][j].ENTITY !== null) {
+                    if (fixedMap[i][j].COLOR !== null) {
+                        ent = {...fixedMap[i][j].ENTITY, COLOR: fixedMap[i][j].COLOR}
+                    } else {
+                        ent = {...fixedMap[i][j].ENTITY}
+                    }
+                    if (fixedMap[i][j].TILE_SCALE === true) {
+                        ent = {...ent, SIZE: mapTileWidth / 2 / lazyRealSizes[ent.SHAPE] * Math.SQRT2 - 2}
+                    }
+                    drawTank(ent, x, y)
+                }
+                if (fixedMap[i][j].PLACE_ROCKS === true) {
+                    drawTank(walls.GRAVEL, x+((mapTileWidth/2)*zoom), y+((mapTileHeight/2)*zoom))
+                    drawTank(walls.GRAVEL, x+(-(mapTileWidth/2)*zoom), y+(-(mapTileHeight/2)*zoom))
+                }
+                if (fixedMap[i][j].PLACE_ROIDS === true) {
+                    drawTank(walls.GRAVEL, x+((mapTileWidth/2)*zoom), y+((mapTileHeight/2)*zoom))
+                    drawTank(walls.ROCK, x+(-(mapTileWidth/2)*zoom), y+(-(mapTileHeight/2)*zoom))
+                }
+                x += mapTileWidth
+            }
+            y += mapTileHeight
+        }
+
+        function fixCoords(x, y) {
+            return {
+                x: (x*zoom)+(canvas.width / 2)-(offsetX/zoom),
+                y: (y*zoom)+(canvas.height / 2)-(offsetY/zoom),
+            }
+        }
+        ctx.globalAlpha = 0.15
+        ctx.beginPath();
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), -fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), -fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), -fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), -fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), -fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), -fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), -fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), -fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.closePath();
+        ctx.fillStyle = getColor("black");
+        ctx.fill()
+        ctx.beginPath();
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.lineTo(
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(-fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*0.5), fixedMap.length*(mapTileHeight*0.5)).y,
+        )
+        ctx.lineTo(
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).x,
+            fixCoords(fixedMap[0].length*(mapTileWidth*20), fixedMap.length*(mapTileHeight*20)).y,
+        )
+        ctx.closePath();
+        ctx.fillStyle = getColor("black");
+        ctx.fill()
+        ctx.globalAlpha = 1
+    }
+    function animate() {
+        try {
+            animT++
+//            eval("(" + document.getElementById('codeInput').value + ")")
+            drawMap(document.getElementById('codeInput').value)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            reanimateColors();
+            drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30, 30,  getColor("white"),  getColor("pureBlack"))
+            //drawTank(dominators.BASE, -350, -350)
+            isErroring = false
+        } catch (e) {
+            if (allowErrors === "true") {
+                console.error("Error in user code:", e);
+                currentError.textContent = "Error in user code:" + e;
+            } else {
+            }
+            isErroring = true
+        }
+        if (isErroring === false) {
+            animT++
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            reanimateColors();
+            drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30, 30,  getColor("white"),  getColor("pureBlack"))
+            borderType = document.getElementById('borderType').value.toString();
+            color = eval(document.getElementById('colorStyle').value);
+            //drawTank(dominators.BASE, -350, -350)
+            drawMap(document.getElementById('codeInput').value)
+            currentError.textContent = "";
+        }
+        allowErrors = document.getElementById('errors').value;
+        setTimeout(animate, 5);
+    }
+    animate();
+    document.getElementById("newCanvasWidth").addEventListener("change", () => {
+        canvas.width = document.getElementById('newCanvasWidth').value;
+    });
+    document.getElementById("newCanvasHeight").addEventListener("change", () => {
+        canvas.height = document.getElementById('newCanvasHeight').value;
+    });
+
+/*
+MAP TEMPLATES
+[
+    [bas1,bas1,____,____,____,____,roid,roid,roid,____,____,____,____,bas3,bas3],
+    [bas1,bap1,____,____,____,____,roid,roid,roid,____,____,____,____,bap3,bas3],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [bas4,bap4,____,____,____,____,roid,roid,roid,____,____,____,____,bap2,bas2],
+    [bas4,bas4,____,____,____,____,roid,roid,roid,____,____,____,____,bas2,bas2]
+]
+
+[
+    [____,____,____,____,____,____,roid,roid,roid,____,____,____,____,____,____],
+    [____,____,____,____,____,____,roid,roid,roid,____,____,____,____,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [roid,roid,____,____,____,nest,nest,nest,nest,nest,____,____,____,roid,roid],
+    [____,____,____,____,____,nest,nest,nest,nest,nest,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,rock,rock,____,____,____,____,____,____,____,rock,rock,____,____],
+    [____,____,____,____,____,____,roid,roid,roid,____,____,____,____,____,____],
+    [____,____,____,____,____,____,roid,roid,roid,____,____,____,____,____,____]
+]
+
+[
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____],
+    [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____]
+]
+*/
+</script>
+
+</body>
+</html>
