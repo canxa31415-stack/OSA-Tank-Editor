@@ -248,7 +248,7 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
         }
     }
 //    console.log(baseColor, x, y, code);
-    ctx.lineWidth = zoom*4.175;
+    ctx.lineWidth = (zoom*4.175)*(code.STROKE_WIDTH ?? 1);
     function turretStuffsBelow() {
         for(let i = 0; i < code.TURRETS.length; i++) {
             if (code.TURRETS[i].POSITION[5] === 0) {
