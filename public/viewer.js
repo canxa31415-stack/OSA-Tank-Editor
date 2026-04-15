@@ -395,9 +395,11 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
     if (code.TURRETS) {
         turretStuffsBelow()
     }
+    ctx.lineWidth = (zoom*4.175)*(code.STROKE_WIDTH ?? 1);
     if (code.PROPS) {
         propStuffsBelow()
     }
+    ctx.lineWidth = (zoom*4.175)*(code.STROKE_WIDTH ?? 1);
     for(let i = 0; i < code.GUNS.length; i++) {
         if (code.GUNS[i].PROPERTIES) {
             ctx.fillStyle = getColor(code.GUNS[i].PROPERTIES.COLOR || "grey");
@@ -420,6 +422,7 @@ const drawEntity = (baseColor, x, y, code, rotation) => {
             }
         }
     }
+    ctx.lineWidth = (zoom*4.175)*(code.STROKE_WIDTH ?? 1);
     ctx.fillStyle = calcColor(code.COLOR);
     ctx.strokeStyle = getColorDark(calcColor(code.COLOR));
     ctx.globalAlpha = code.ALPHA || 1
