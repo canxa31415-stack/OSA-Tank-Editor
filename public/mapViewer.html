@@ -158,6 +158,8 @@
 <script src="turrets.js"></script>
 <script src="bosses.js"></script>
 <script>
+    const input = document.getElementById('codeInput');
+
     function home() {
         window.location.href = 'index.html';
     }
@@ -1141,8 +1143,8 @@
     function animate() {
         try {
             animT++
-//            eval("(" + document.getElementById('codeInput').value + ")")
-            drawMap(document.getElementById('codeInput').value)
+//            eval("(" + input.value + ")")
+            drawMap(input.value)
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             reanimateColors();
             drawGrid(ctx, (canvas.width / 2)-(offsetX/zoom), (canvas.height / 2)-(offsetY/zoom), 30, 30,  getColor("white"),  getColor("pureBlack"))
@@ -1164,7 +1166,7 @@
             borderType = document.getElementById('borderType').value.toString();
             color = eval(document.getElementById('colorStyle').value);
             //drawTank(dominators.BASE, -350, -350)
-            drawMap(document.getElementById('codeInput').value)
+            drawMap(input.value)
             currentError.textContent = "";
         }
         allowErrors = document.getElementById('errors').value;
@@ -1234,6 +1236,17 @@ MAP TEMPLATES
     [____,____,____,____,____,____,____,____,____,____,____,____,____,____,____]
 ]
 */
+input.addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+    }
+});
 </script>
 
 </body>
